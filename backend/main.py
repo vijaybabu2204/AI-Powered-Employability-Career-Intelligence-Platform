@@ -17,7 +17,16 @@ from pydantic import BaseModel
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173", "http://127.0.0.1:5174"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "https://frontend-theta-swart-30.vercel.app",
+        "https://frontend-k1qasions-vijaybabukada22-6322s-projects.vercel.app",
+        "https://frontend-lbz4y8qqm-vijaybabukada22-6322s-projects.vercel.app",
+        "https://frontend-196t2akq9-vijaybabukada22-6322s-projects.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,7 +40,7 @@ def init_db():
         
         # 1. Users
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Users (
+        CREATE TABLE IF NOT EXISTS users (
             UserID INT AUTO_INCREMENT PRIMARY KEY,
             Name VARCHAR(100) NOT NULL,
             Email VARCHAR(100) UNIQUE NOT NULL,
@@ -42,7 +51,7 @@ def init_db():
         
         # 2. Skills
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Skills (
+        CREATE TABLE IF NOT EXISTS skills (
             SkillID INT AUTO_INCREMENT PRIMARY KEY,
             StudentID INT NOT NULL,
             SkillName VARCHAR(100) NOT NULL,
@@ -51,7 +60,7 @@ def init_db():
         """)
         
         # Check if skills exist for student 1, if not seed
-        cursor.execute("SELECT COUNT(*) FROM Skills WHERE StudentID = 1")
+        cursor.execute("SELECT COUNT(*) FROM skills WHERE StudentID = 1")
         if cursor.fetchone()[0] == 0:
             skills_to_seed = [
                 ("Python", "Advanced"),
@@ -63,7 +72,7 @@ def init_db():
                 ("HTML/CSS", "Advanced")
             ]
             cursor.executemany(
-                "INSERT INTO Skills (StudentID, SkillName, SkillLevel) VALUES (1, %s, %s)",
+                "INSERT INTO skills (StudentID, SkillName, SkillLevel) VALUES (1, %s, %s)",
                 skills_to_seed
             )
             print("Seeded default skills for student 1.")
@@ -92,7 +101,7 @@ def get_students():
 
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM Students")
+    cursor.execute("SELECT * FROM students")
 
     data = cursor.fetchall()
 
@@ -157,7 +166,7 @@ async def upload_resume(file: UploadFile = File(...)):
 # Save Resume Details
     cursor.execute(
     """
-    INSERT INTO Resume
+    INSERT INTO resume
     (
         StudentID,
         ResumePath,
@@ -221,7 +230,7 @@ def get_resume_results():
 
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM Resume")
+    cursor.execute("SELECT * FROM resume")
 
     data = cursor.fetchall()
 
@@ -262,7 +271,7 @@ def predict_placement(student: StudentInput):
     # Query latest BestRole from Resume table
     cursor.execute("""
         SELECT BestRole 
-        FROM Resume 
+        FROM resume 
         WHERE StudentID = 1 
         ORDER BY ResumeID DESC 
         LIMIT 1
@@ -275,7 +284,7 @@ def predict_placement(student: StudentInput):
 
     cursor.execute(
         """
-        INSERT INTO Placements
+        INSERT INTO placements
         (
             StudentID,
             CGPA,
@@ -315,7 +324,7 @@ def placement_results():
 
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM Placements")
+    cursor.execute("SELECT * FROM placements")
 
     data = cursor.fetchall()
 
@@ -331,7 +340,7 @@ def get_skills():
 
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM Skills")
+    cursor.execute("SELECT * FROM skills")
 
     data = cursor.fetchall()
 
@@ -345,7 +354,7 @@ def roadmap():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
         SELECT *
-        FROM Resume
+        FROM resume
         ORDER BY ResumeID DESC
         LIMIT 1
     """)
@@ -389,7 +398,7 @@ def mock_interview():
 
     cursor.execute("""
         SELECT *
-        FROM Resume
+        FROM resume
         ORDER BY ResumeID DESC
         LIMIT 1
     """)
@@ -438,7 +447,7 @@ def evaluate(input: InterviewInput):
 
     cursor.execute(
         """
-        INSERT INTO InterviewHistory
+        INSERT INTO interviewhistory
         (
         StudentID,
         Question,
@@ -498,29 +507,29 @@ def register_user(user: UserRegister):
     cursor = conn.cursor(dictionary=True)
     
     # Check if user already exists
-    cursor.execute("SELECT * FROM Users WHERE Email = %s", (user.email,))
+    cursor.execute("SELECT * FROM users WHERE Email = %s", (user.email,))
     if cursor.fetchone():
         conn.close()
         raise HTTPException(status_code=400, detail="Account with this email already exists.")
         
     # Insert new user
     cursor.execute(
-        "INSERT INTO Users (Name, Email, Password) VALUES (%s, %s, %s)",
+        "INSERT INTO users (Name, Email, Password) VALUES (%s, %s, %s)",
         (user.name, user.email, user.password)
     )
     conn.commit()
     
     # Fetch the newly created UserID
-    cursor.execute("SELECT UserID FROM Users WHERE Email = %s", (user.email,))
+    cursor.execute("SELECT UserID FROM users WHERE Email = %s", (user.email,))
     user_record = cursor.fetchone()
     new_user_id = user_record["UserID"]
     
     # Automatically seed a matching student profile so they show up on the dashboard
-    cursor.execute("SELECT * FROM Students WHERE Email = %s", (user.email,))
+    cursor.execute("SELECT * FROM students WHERE Email = %s", (user.email,))
     if not cursor.fetchone():
         cursor.execute(
             """
-            INSERT INTO Students (StudentID, Name, Branch, CGPA, YearOfStudy, Email)
+            INSERT INTO students (StudentID, Name, Branch, CGPA, YearOfStudy, Email)
             VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (new_user_id, user.name, "Computer Science", 8.0, 3, user.email)
@@ -536,7 +545,7 @@ def login_user(user: UserLogin):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     
-    cursor.execute("SELECT * FROM Users WHERE Email = %s AND Password = %s", (user.email, user.password))
+    cursor.execute("SELECT * FROM users WHERE Email = %s AND Password = %s", (user.email, user.password))
     user_record = cursor.fetchone()
     
     if not user_record:
@@ -544,7 +553,7 @@ def login_user(user: UserLogin):
         raise HTTPException(status_code=401, detail="Invalid email or password.")
         
     # Fetch matching student profile
-    cursor.execute("SELECT * FROM Students WHERE Email = %s", (user.email,))
+    cursor.execute("SELECT * FROM students WHERE Email = %s", (user.email,))
     student_record = cursor.fetchone()
     
     conn.close()
@@ -585,7 +594,7 @@ def evaluate_full(input: FullInterviewInput):
     cursor = conn.cursor()
     cursor.execute(
         """
-        INSERT INTO InterviewHistory
+        INSERT INTO interviewhistory
         (
             StudentID,
             Question,
@@ -634,7 +643,7 @@ def forgot_password(data: dict):
         
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Users WHERE Email = %s", (email,))
+    cursor.execute("SELECT * FROM users WHERE Email = %s", (email,))
     user = cursor.fetchone()
     conn.close()
     
@@ -677,7 +686,7 @@ def reset_password(input: ResetPasswordInput):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE Users SET Password = %s WHERE Email = %s",
+        "UPDATE users SET Password = %s WHERE Email = %s",
         (new_password, email)
     )
     conn.commit()

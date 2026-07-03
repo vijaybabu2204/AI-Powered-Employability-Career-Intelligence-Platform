@@ -1,0 +1,9 @@
+backend/
+database/
+docs/
+ml/
+uploads/
+requirements.txt
+Procfile
+.venv/
+scratch/
