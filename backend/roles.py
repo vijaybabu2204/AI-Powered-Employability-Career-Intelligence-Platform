@@ -1,0 +1,80 @@
+ROLE_SKILLS = {
+
+    "data_analyst": [
+        "python",
+        "sql",
+        "excel",
+        "power bi",
+        "tableau",
+        "statistics",
+        "data analytics",
+        "data visualization",
+        "power query",
+        "dax",
+        "snowflake",
+        "mysql",
+        "data modeling",
+        "etl",
+        "business intelligence",
+        "pandas",
+        "numpy"
+    ],
+
+    "aiml_engineer": [
+        "python",
+        "sql",
+        "machine learning",
+        "deep learning",
+        "artificial intelligence",
+        "numpy",
+        "pandas",
+        "scikit-learn",
+        "tensorflow",
+        "pytorch",
+        "nlp",
+        "computer vision",
+        "fastapi",
+        "git",
+        "github",
+        "docker",
+        "mlops",
+        "data structures",
+        "algorithms"
+    ],
+
+    "data_scientist": [
+        "python",
+        "sql",
+        "statistics",
+        "machine learning",
+        "deep learning",
+        "data analytics",
+        "data visualization",
+        "pandas",
+        "numpy",
+        "scikit-learn",
+        "tensorflow",
+        "power bi",
+        "tableau",
+        "hypothesis testing",
+        "feature engineering",
+        "snowflake",
+        "big data"
+    ],
+
+    "data_engineer": [
+        "python",
+        "sql",
+        "snowflake",
+        "etl",
+        "data warehouse",
+        "apache spark",
+        "hadoop",
+        "airflow",
+        "azure",
+        "aws",
+        "docker",
+        "kafka",
+        "data modeling"
+    ]
+}
