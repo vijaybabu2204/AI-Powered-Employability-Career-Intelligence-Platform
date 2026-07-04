@@ -4,11 +4,12 @@ import { loginUser, registerUser, forgotPassword, resetPassword } from '../servi
 
 export default function LoginPortal({ onLogin }) {
   const [activeTab, setActiveTab] = useState('login');
-  const [email, setEmail] = useState('vijay@gmail.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [bypassCode, setBypassCode] = useState('');
   
-  // Security token state (bypass code: 1337)
+  // Security token state
   const [token, setToken] = useState(['', '', '', '']);
   const tokenRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
@@ -39,6 +40,9 @@ export default function LoginPortal({ onLogin }) {
       setActiveTab('reset-password');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
+    // Generate a random 4-digit bypass code (1000 - 9999)
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    setBypassCode(code);
   }, []);
 
   const handleTokenChange = (index, val) => {
@@ -114,8 +118,8 @@ export default function LoginPortal({ onLogin }) {
         setError("Please enter the 4-digit system bypass token.");
         return;
       }
-      if (fullToken !== '1337') {
-        setError("Bypass token mismatch! (System hint: Enter '1337' to authenticate)");
+      if (fullToken !== bypassCode) {
+        setError(`Bypass token mismatch! (System hint: Enter '${bypassCode}' to authenticate)`);
         return;
       }
 
@@ -450,7 +454,7 @@ export default function LoginPortal({ onLogin }) {
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                     <Key size={12} /> System Bypass Token
                   </label>
-                  <span>Pass: 1337</span>
+                  <span>Pass: {bypassCode}</span>
                 </div>
                 <div className="token-input-row">
                   {token.map((digit, idx) => (
@@ -514,7 +518,7 @@ export default function LoginPortal({ onLogin }) {
                 <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Registered Email</label>
                 <input 
                   type="email" 
-                  placeholder="vijay@gmail.com"
+                  placeholder="email@example.com"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   style={{ width: '100%', marginTop: '0.25rem' }}

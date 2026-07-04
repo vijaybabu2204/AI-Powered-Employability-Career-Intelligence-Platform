@@ -27,11 +27,46 @@ Return ONLY JSON.
 """
 
 def generate_interview(profile):
+    target_role = profile.get("best_role") or profile.get("BestRole") or "Software Engineer"
+    
+    # Customise prompt slightly based on role to ensure relevant questions
+    role_mix_instructions = ""
+    role_lower = target_role.lower()
+    if "vlsi" in role_lower or "hardware" in role_lower:
+        role_mix_instructions = "- Technical: VLSI Design, Verilog/VHDL, Logic Design, FPGA, CMOS Circuits, and physical design concepts."
+    elif "embedded" in role_lower or "system" in role_lower:
+        role_mix_instructions = "- Technical: Embedded C/C++, Microcontrollers (ARM/AVR), RTOS, Device Drivers, I2C/SPI/UART protocols."
+    else:
+        role_mix_instructions = "- Technical: Software engineering principles, databases, web technologies, and systems architecture."
+
+    system_prompt = f"""
+You are an experienced Technical Interviewer for the role: {target_role}.
+
+Generate 10 interview questions tailored to the candidate's profile and the target role of {target_role}.
+
+Mix:
+- HR
+{role_mix_instructions}
+- Coding/Scripting or Problem Solving (Python/C/C++/Java/SQL appropriate for the role)
+- Projects from the candidate profile
+- Resume experience
+
+Return ONLY JSON in this format:
+{{
+    "questions":[
+        {{
+            "question":"",
+            "category":""
+        }}
+    ]
+}}
+"""
+
     content = chat_completion(
         messages=[
             {
                 "role":"system",
-                "content":SYSTEM_PROMPT
+                "content":system_prompt
             },
             {
                 "role":"user",
@@ -41,7 +76,7 @@ def generate_interview(profile):
         format_json=True
     )
 
-    content=content.replace("```json","").replace("```","").strip()
+    content = content.replace("```json","").replace("```","").strip()
     return json.loads(content)
 
 def evaluate_answer(question, answer, role):

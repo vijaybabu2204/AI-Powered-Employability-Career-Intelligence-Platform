@@ -60,9 +60,13 @@ export async function generateRoadmap() {
   return response.json();
 }
 
-export async function mockInterview() {
+export async function mockInterview(role) {
+  const body = role ? JSON.stringify({ role }) : undefined;
+  const headers = role ? { 'Content-Type': 'application/json' } : undefined;
   const response = await fetch(`${API_BASE_URL}/mock-interview`, {
     method: 'POST',
+    headers,
+    body,
   });
   if (!response.ok) throw new Error('Failed to fetch mock interview questions');
   return response.json();

@@ -391,8 +391,11 @@ def roadmap():
     return roadmap
 
 
+class MockInterviewInput(BaseModel):
+    role: str = None
+
 @app.post("/mock-interview")
-def mock_interview():
+def mock_interview(input: MockInterviewInput = None):
 
     conn = get_connection()
 
@@ -409,12 +412,14 @@ def mock_interview():
 
     conn.close()
 
+    target_role = (input.role if input and input.role else None) or (resume["BestRole"] if resume and "BestRole" in resume else None) or "Software Engineer"
+
     profile = {
-        "skills": resume["SkillsFound"],
-        "best_role": resume["BestRole"],
-        "projects": resume["Projects"],
-        "education": resume["Education"],
-        "experience": resume["Experience"]
+        "skills": resume["SkillsFound"] if resume and "SkillsFound" in resume else "Core Programming",
+        "best_role": target_role,
+        "projects": resume["Projects"] if resume and "Projects" in resume else "",
+        "education": resume["Education"] if resume and "Education" in resume else "",
+        "experience": resume["Experience"] if resume and "Experience" in resume else ""
     }
 
     return generate_interview(profile)

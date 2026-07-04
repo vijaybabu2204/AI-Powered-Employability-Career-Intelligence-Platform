@@ -217,7 +217,7 @@ export default function MockInterview({ currentStudent }) {
     setBulkEvaluation(null);
 
     try {
-      const data = await mockInterview();
+      const data = await mockInterview(interviewRole);
       if (data.questions && data.questions.length > 0) {
         setQuestions(data.questions);
         setSessionActive(true);
@@ -397,6 +397,8 @@ export default function MockInterview({ currentStudent }) {
               <option value="AI/ML Engineer" style={{ background: 'var(--bg-secondary)' }}>AI/ML Engineer</option>
               <option value="Data Scientist" style={{ background: 'var(--bg-secondary)' }}>Data Scientist</option>
               <option value="Full Stack Developer" style={{ background: 'var(--bg-secondary)' }}>Full Stack Developer</option>
+              <option value="VLSI Engineer" style={{ background: 'var(--bg-secondary)' }}>VLSI Engineer</option>
+              <option value="Embedded Systems Engineer" style={{ background: 'var(--bg-secondary)' }}>Embedded Systems Engineer</option>
             </select>
           </div>
 

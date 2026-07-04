@@ -22,6 +22,7 @@ IMPORTANT RULES:
 6. ATS score must be between 0 and 100.
 7. Role Match must be between 0 and 100.
 8. If information is missing, return an empty string "" or empty list [].
+9. If the candidate's skills, projects, or experience relate to hardware, semiconductors, VLSI, embedded systems, microcontrollers, circuits, or electrical/electronics engineering, recommend matching core roles (e.g., "VLSI Engineer" or "Embedded Systems Engineer" or "Hardware Engineer") as the best roles instead of standard software/IT roles.
 
 Supported roles include (but are not limited to):
 
@@ -40,6 +41,11 @@ Supported roles include (but are not limited to):
 - Business Analyst
 - Power BI Developer
 - Data Engineer
+- VLSI Engineer
+- VLSI Designer
+- Embedded Systems Engineer
+- Hardware Engineer
+- Electronics Engineer
 
 Return JSON in EXACTLY this format:
 
