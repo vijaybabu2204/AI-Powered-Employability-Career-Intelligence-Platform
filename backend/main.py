@@ -25,7 +25,8 @@ app.add_middleware(
         "https://frontend-theta-swart-30.vercel.app",
         "https://frontend-k1qasions-vijaybabukada22-6322s-projects.vercel.app",
         "https://frontend-lbz4y8qqm-vijaybabukada22-6322s-projects.vercel.app",
-        "https://frontend-196t2akq9-vijaybabukada22-6322s-projects.vercel.app"
+        "https://frontend-196t2akq9-vijaybabukada22-6322s-projects.vercel.app",
+        "https://frontend-three-liart-16.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
