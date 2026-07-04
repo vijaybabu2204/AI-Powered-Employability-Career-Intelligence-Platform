@@ -65,7 +65,7 @@ export default function App() {
         }
       } catch (err) {
         console.error(err);
-        setError("Failed to load students. Please verify that the FastAPI backend server is running on https://ai-powered-employability-career-intelligence-pla-production.up.railway.app and the MySQL database is active.");
+        setError("Failed to load students. Please verify that the FastAPI backend server is running on https://career-ai-backendd.onrender.com and the MySQL database is active.");
       } finally {
         setLoading(false);
       }

@@ -17,10 +17,17 @@ def get_connection():
     password = os.getenv("MYSQL_PASSWORD") or os.getenv("MYSQLPASSWORD")
     database = os.getenv("MYSQL_DATABASE") or os.getenv("MYSQLDATABASE")
 
-    return mysql.connector.connect(
-        host=host,
-        port=port,
-        user=user,
-        password=password,
-        database=database
-    )
+    try:
+        return mysql.connector.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            database=database
+        )
+    except Exception as e:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=503,
+            detail=f"Database connection failed: {str(e)}. Please check your MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, and MYSQL_DATABASE environment variables on Render."
+        )
