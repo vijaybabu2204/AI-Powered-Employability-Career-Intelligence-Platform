@@ -65,7 +65,7 @@ export default function App() {
         }
       } catch (err) {
         console.error(err);
-        setError("Failed to load students. Please verify that the FastAPI backend server is running on http://localhost:8000 and the MySQL database is active.");
+        setError("Failed to load students. Please verify that the FastAPI backend server is running on https://ai-powered-employability-career-intelligence-pla-production.up.railway.app and the MySQL database is active.");
       } finally {
         setLoading(false);
       }
@@ -105,23 +105,23 @@ export default function App() {
 
   if (!isAuthenticated) {
     return (
-      <LoginPortal 
+      <LoginPortal
         onLogin={(userData) => {
           setIsAuthenticated(true);
           setCurrentUser(userData);
           localStorage.setItem("authenticated", "true");
           localStorage.setItem("currentUser", JSON.stringify(userData));
-        }} 
+        }}
       />
     );
   }
 
   return (
     <div className="app-container">
-      <Sidebar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        currentStudent={currentStudent} 
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        currentStudent={currentStudent}
         onLogout={handleLogout}
         theme={theme}
         toggleTheme={toggleTheme}
