@@ -5,7 +5,7 @@ from backend.interview_service import evaluate_answer, evaluate_full_interview
 from backend.github_service import analyze_github_profile
 from fastapi.middleware.cors import CORSMiddleware
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 import shutil
 import pdfplumber
 import joblib
@@ -111,7 +111,7 @@ def get_students():
     return data
 
 @app.post("/upload-resume")
-async def upload_resume(file: UploadFile = File(...)):
+async def upload_resume(file: UploadFile = File(...), student_id: int = Form(1)):
     import os
     os.makedirs("uploads", exist_ok=True)
     file_path = f"uploads/{file.filename}"
@@ -195,7 +195,7 @@ async def upload_resume(file: UploadFile = File(...)):
     (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,CURDATE())
     """,
     (
-        1,
+        student_id,
         file_path,
         ats_score,
         skills_found,
@@ -226,13 +226,35 @@ async def upload_resume(file: UploadFile = File(...)):
 
 
 @app.get("/resume-results")
-def get_resume_results():
+def get_resume_results(student_id: int = None):
 
     conn = get_connection()
 
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM resume")
+    if student_id:
+        cursor.execute("SELECT * FROM resume WHERE StudentID = %s", (student_id,))
+    else:
+        cursor.execute("SELECT * FROM resume")
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+
+@app.get("/interview-history")
+def get_interview_history(student_id: int = None):
+
+    conn = get_connection()
+
+    cursor = conn.cursor(dictionary=True)
+
+    if student_id:
+        cursor.execute("SELECT * FROM interviewhistory WHERE StudentID = %s", (student_id,))
+    else:
+        cursor.execute("SELECT * FROM interviewhistory")
 
     data = cursor.fetchall()
 
@@ -431,6 +453,8 @@ class InterviewInput(BaseModel):
     answer: str
 
     role: str
+
+    student_id: int = 1
     
 
 
@@ -472,7 +496,7 @@ def evaluate(input: InterviewInput):
 
         (
 
-            1,
+            input.student_id,
 
             input.question,
 
@@ -581,6 +605,7 @@ class AnswerItem(BaseModel):
 class FullInterviewInput(BaseModel):
     answers: list[AnswerItem]
     role: str
+    student_id: int = 1
 
 
 @app.post("/evaluate-interview")
@@ -616,7 +641,7 @@ def evaluate_full(input: FullInterviewInput):
         (%s, %s, %s, %s, %s, %s, %s, %s)
         """,
         (
-            1,
+            input.student_id,
             f"Full Mock Interview: {input.role}",
             "Evaluated complete mock interview block.",
             result.get("technical_score", 0),

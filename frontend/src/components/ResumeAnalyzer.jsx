@@ -27,10 +27,10 @@ export default function ResumeAnalyzer({ currentStudent }) {
 
   const loadHistory = async () => {
     try {
-      const data = await fetchResumeResults();
+      const data = await fetchResumeResults(currentStudent?.StudentID);
       // Filter history for current student
       const studentHistory = data
-        .filter(r => r.StudentID === currentStudent.StudentID)
+        .filter(r => r.StudentID === currentStudent?.StudentID)
         .sort((a, b) => b.ResumeID - a.ResumeID); // Latest first
       setHistory(studentHistory);
     } catch (err) {
@@ -61,7 +61,7 @@ export default function ResumeAnalyzer({ currentStudent }) {
     setAnalysis(null);
 
     try {
-      const result = await uploadResume(file);
+      const result = await uploadResume(file, currentStudent?.StudentID);
       // Sanitize backend response fields to map consistently with history data formats
       const mapped = {
         candidate_name: result.candidate_name,

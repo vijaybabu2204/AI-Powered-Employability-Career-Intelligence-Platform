@@ -64,7 +64,7 @@ export default function MockInterview({ currentStudent }) {
   const loadHistory = async () => {
     if (!currentStudent) return;
     try {
-      const allHist = await fetchInterviewHistory();
+      const allHist = await fetchInterviewHistory(currentStudent.StudentID);
       const filtered = allHist
         .filter(h => h.StudentID === currentStudent.StudentID && h.Question?.startsWith("Full Mock"))
         .map(h => {
@@ -296,7 +296,7 @@ export default function MockInterview({ currentStudent }) {
     setError(null);
 
     try {
-      const data = await evaluateFullInterview(scoresAccumulator, interviewRole);
+      const data = await evaluateFullInterview(scoresAccumulator, interviewRole, currentStudent?.StudentID);
       
       // Robust sanitization to guard against malformed LLM outputs and avoid white/black screens
       const sanitized = {

@@ -6,9 +6,12 @@ export async function fetchStudents() {
   return response.json();
 }
 
-export async function uploadResume(file) {
+export async function uploadResume(file, studentId) {
   const formData = new FormData();
   formData.append('file', file);
+  if (studentId) {
+    formData.append('student_id', studentId);
+  }
 
   const response = await fetch(`${API_BASE_URL}/upload-resume`, {
     method: 'POST',
@@ -18,8 +21,9 @@ export async function uploadResume(file) {
   return response.json();
 }
 
-export async function fetchResumeResults() {
-  const response = await fetch(`${API_BASE_URL}/resume-results`);
+export async function fetchResumeResults(studentId) {
+  const url = studentId ? `${API_BASE_URL}/resume-results?student_id=${studentId}` : `${API_BASE_URL}/resume-results`;
+  const response = await fetch(url);
   if (!response.ok) throw new Error('Failed to fetch resume results');
   return response.json();
 }
@@ -40,8 +44,9 @@ export async function fetchPlacementResults() {
   return response.json();
 }
 
-export async function fetchInterviewHistory() {
-  const response = await fetch(`${API_BASE_URL}/interview-history`);
+export async function fetchInterviewHistory(studentId) {
+  const url = studentId ? `${API_BASE_URL}/interview-history?student_id=${studentId}` : `${API_BASE_URL}/interview-history`;
+  const response = await fetch(url);
   if (!response.ok) throw new Error('Failed to fetch interview history');
   return response.json();
 }
@@ -108,11 +113,11 @@ export async function registerUser(name, email, password) {
   return response.json();
 }
 
-export async function evaluateFullInterview(answers, role) {
+export async function evaluateFullInterview(answers, role, studentId) {
   const response = await fetch(`${API_BASE_URL}/evaluate-interview`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ answers, role }),
+    body: JSON.stringify({ answers, role, student_id: studentId }),
   });
   if (!response.ok) throw new Error('Failed to evaluate mock interview');
   return response.json();
